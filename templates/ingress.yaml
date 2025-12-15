@@ -7,9 +7,15 @@ metadata:
   labels:
     app: ingress
     {{- include "examkube_chart.labels" . | nindent 4 }}
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
 spec:
   # OU bien utiliser ingressClassName (k8s >=1.19)
   ingressClassName: traefik
+  tls:
+    - hosts:
+        - examkube.jaffleman.tech
+      secretName: examkube-tls
   rules:
     - host: examkube.jaffleman.tech
       http:
