@@ -1,10 +1,11 @@
+nameOverride: ""
+fullnameOverride: "examkube"
 
-# values.yaml (exemple minimal)
 namespace:
   create: true
 
 replicas:
-  fastapi: 1
+  fastapi: 3
   postgres: 1
 
 images:
