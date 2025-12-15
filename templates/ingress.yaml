@@ -1,0 +1,23 @@
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ include "examkube_chart.fullname" . }}
+  namespace: standard
+  labels:
+    app: ingress
+    {{- include "examkube_chart.labels" . | nindent 4 }}
+spec:
+  # OU bien utiliser ingressClassName (k8s >=1.19)
+  ingressClassName: traefik
+  rules:
+    - host: examkube.jaffleman.tech
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ include "examkube_chart.fullname" . }}-fastapi
+                port:
+                  number: 5000

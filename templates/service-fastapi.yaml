@@ -3,7 +3,7 @@ kind: Service
 metadata:
   name: {{ include "examkube_chart.fullname" . }}-fastapi
   labels:
-    app: fastapi
+    app: fastapi-service
     {{- include "examkube_chart.labels" . | nindent 4 }}
 spec:
   type: ClusterIP
