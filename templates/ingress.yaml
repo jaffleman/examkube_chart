@@ -10,7 +10,6 @@ metadata:
   annotations:
     cert-manager.io/cluster-issuer: letsencrypt-prod
 spec:
-  # OU bien utiliser ingressClassName (k8s >=1.19)
   ingressClassName: traefik
   tls:
     - hosts:
