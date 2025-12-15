@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "examkube_chart.fullname" . }}-postgres
+  labels:
+    app: postgres
+    {{- include "examkube_chart.labels" . | nindent 4 }}
+spec:
+  clusterIP: None
+  selector:
+    app: postgres
+  ports:
+    - name: pg
+      port: {{ default 5432 .Values.db.port | int }}
+      targetPort: {{ default 5432 .Values.db.port | int }}
+

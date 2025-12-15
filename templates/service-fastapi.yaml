@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "examkube_chart.fullname" . }}
+  labels:
+    app: fastapi
+    {{- include "examkube_chart.labels" . | nindent 4 }}
+spec:
+  type: ClusterIP
+  selector:
+    app: fastapi
+  ports:
+    - name: http
+      port: {{ default 80 .Values.service.port | int }}
+      targetPort: {{ .Values.app.port | int }}
+

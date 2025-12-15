@@ -1,0 +1,86 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "examkube_chart.fullname" . }}
+  labels:
+    app: fastapi
+    {{- include "examkube_chart.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicas.fastapi | int }}
+  selector:
+    matchLabels:
+      {{- include "examkube_chart.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "examkube_chart.selectorLabels" . | nindent 8 }}
+        app: fastapi
+        {{- include "examkube_chart.labels" . | nindent 8 }}
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+    spec:
+      initContainers:
+        - name: wait-for-postgres
+          image: busybox:1.36
+          command: ["sh","-c"]
+          args:
+            - |
+              echo "⏳ Waiting for Postgres at ${DB_HOST}:${DB_PORT}...";
+              i=0
+              until nc -zv "${DB_HOST}" "${DB_PORT}"; do
+                i=$((i+1))
+                if [ "$i" -gt 90 ]; then
+                  echo "❌ Timeout waiting for Postgres"
+                  exit 1
+                fi
+                echo "… still waiting"
+                sleep 2
+              done
+              echo "✅ Postgres is reachable"
+          envFrom:
+            - configMapRef:
+                name: app-config
+            - secretRef:
+                name: db-credentials
+      containers:
+        - name: app
+          image: {{ .Values.images.fastapi }}
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: {{ .Values.app.port | int }}
+          envFrom:
+            - configMapRef:
+                name: app-config
+            - secretRef:
+                name: db-credentials
+          env:
+            - name: DATABASE_URL
+              value: "postgresql://{{ .Values.db.user }}:{{ .Values.db.password }}@{{ .Values.db.host }}:{{ .Values.db.port }}/{{ .Values.db.name }}"
+          command: ["sh","-c"]
+          args:
+            - >
+              exec uvicorn app:app --host "${APP_HOST}" --port "${APP_PORT}"
+          readinessProbe:
+            httpGet:
+              path: {{ default "/healthz" .Values.app.healthPath | quote }}
+              port: http
+            initialDelaySeconds: 3
+            periodSeconds: 5
+            timeoutSeconds: 2
+            failureThreshold: 5
+          livenessProbe:
+            httpGet:
+              path: {{ default "/healthz" .Values.app.healthPath | quote }}
+              port: http
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 2
+            failureThreshold: 3
+          resources:
+            requests:
+              cpu: {{ .Values.resources.fastapi.requests.cpu | quote }}
+              memory: {{ .Values.resources.fastapi.requests.memory | quote }}
+            limits:
+              cpu: {{ .Values.resources.fastapi.limits.cpu | quote }}
+              memory: {{ .Values.resources.fastapi.limits.memory | quote }}

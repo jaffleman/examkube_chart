@@ -1,0 +1,25 @@
+
+Merci d'avoir installé {{ .Chart.Name }}!
+
+Namespace : {{ .Release.Namespace }}
+Domaine   : {{ .Values.exposed_external_url }}
+
+Vérifications :
+  1) Pods
+     kubectl -n {{ .Release.Namespace }} get pods -o wide
+
+  2) Services
+     kubectl -n {{ .Release.Namespace }} get svc
+
+  3) Ingress (Traefik)
+     kubectl -n {{ .Release.Namespace }} get ingress fastapi-ing -o yaml | less
+
+  4) Accès HTTP(S)
+     http(s)://{{ .Values.exposed_external_url }}/docs
+
+Astuce :
+  - Logs FastAPI :
+    kubectl -n {{ .Release.Namespace }} logs deploy/fastapi -f
+
+  - Postgres :
+    kubectl -n {{ .Release.Namespace }} exec -it sts/postgres -- sh -lc 'psql -U "$POSTGRES_USER" -d "$POSTGRES_DB" -c "\l"'

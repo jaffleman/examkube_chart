@@ -1,0 +1,68 @@
+
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "examkube_chart.fullname" . }}-postgres
+  labels:
+    app: postgres
+    {{- include "examkube_chart.labels" . | nindent 4 }}
+spec:
+  serviceName: {{ include "examkube_chart.fullname" . }}-postgres
+  replicas: {{ default 1 .Values.replicas.postgres | int }}
+  selector:
+    matchLabels:
+      {{- include "examkube_chart.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "examkube_chart.selectorLabels" . | nindent 8 }}
+        app: postgres
+        {{- include "examkube_chart.labels" . | nindent 8 }}
+    spec:
+      securityContext:
+        fsGroup: 999
+      containers:
+        - name: postgres
+          image: {{ .Values.images.postgres | quote }}
+          imagePullPolicy: IfNotPresent
+          envFrom:
+            - secretRef:
+                name: postgres-credentials
+          ports:
+            - name: pg
+              containerPort: {{ default 5432 .Values.db.port | int }}
+          volumeMounts:
+            - name: data
+              mountPath: {{ .Values.path.postgres | quote }}
+          readinessProbe:
+            exec:
+              command:
+                - /bin/sh
+                - -c
+                - >
+                  pg_isready -U "$POSTGRES_USER" -h 127.0.0.1 -p {{ default 5432 .Values.db.port | int }}
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 2
+            failureThreshold: 3
+          livenessProbe:
+            tcpSocket:
+              port: pg
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          resources:
+            requests:
+              cpu: {{ .Values.resources.postgres.requests.cpu | quote }}
+              memory: {{ .Values.resources.postgres.requests.memory | quote }}
+            limits:
+              cpu: {{ .Values.resources.postgres.limits.cpu | quote }}
+              memory: {{ .Values.resources.postgres.limits.memory | quote }}
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        storageClassName: {{ default "local-path" .Values.storage.class | quote }}
+        resources:
+          requests:
+            storage: {{ default "5Gi" .Values.storage.size | quote }}

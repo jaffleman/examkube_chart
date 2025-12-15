@@ -1,0 +1,56 @@
+
+# values.yaml (exemple minimal)
+namespace:
+  create: true
+
+replicas:
+  fastapi: 1
+  postgres: 1
+
+images:
+  fastapi: docker.io/jaffleman971/fastapi-image:latest
+  postgres: postgres:16-alpine
+
+
+app:
+  host: "0.0.0.0"
+  port: 5000
+  healthPath: "/docs"
+
+
+service:
+  port: 5000
+
+
+db:
+  host: "db"          
+  port: 5432
+  name: "storedb"      
+  user: "admin"       
+  password: "password"
+
+
+path:
+  postgres: "/var/lib/postgresql/data"
+
+
+resources:
+  fastapi:
+    requests:
+      cpu: "100m"
+      memory: "128Mi"
+    limits:
+      cpu: "500m"
+      memory: "512Mi"
+  postgres:
+    requests:
+      cpu: "100m"
+      memory: "256Mi"
+    limits:
+      cpu: "500m"
+      memory: "1Gi"
+
+
+storage:
+  class: "local-path"   # k3s par défaut
+  size: "5Gi"
