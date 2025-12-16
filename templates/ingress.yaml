@@ -5,17 +5,9 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: {{ include "examkube_chart.fullname" . }}
-  labels:
-    {{- include "examkube_chart.labels" . | nindent 4 }}
-  annotations:
-    # Sélection du resolver ACME configuré dans Traefik (ex.: "le")
-    traefik.ingress.kubernetes.io/router.tls.certresolver: "le"
 spec:
   # Classe d’Ingress (remplace l’annotation dépréciée)
   ingressClassName: traefik
-  tls:
-    - hosts:
-        - {{ $host }}
   rules:
     - host: {{ $host }}
       http:
