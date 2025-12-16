@@ -5,9 +5,15 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: {{ include "examkube_chart.fullname" . }}
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
 spec:
   # Classe d’Ingress (remplace l’annotation dépréciée)
   ingressClassName: traefik
+  tls:
+    - secretName: {{ include "examkube_chart.fullname" . }}-tls
+      hosts:
+        - {{ $host }}
   rules:
     - host: {{ $host }}
       http:
