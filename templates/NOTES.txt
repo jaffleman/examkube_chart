@@ -5,17 +5,21 @@ Namespace : {{ .Release.Namespace }}
 Domaine   : {{ .Values.exposed_external_url }}
 
 Vérifications :
-  1) Pods
+   1) Pods
      kubectl -n {{ .Release.Namespace }} get pods -o wide
 
-  2) Services
+   2) Services
      kubectl -n {{ .Release.Namespace }} get svc
 
-  3) Ingress (Traefik)
-     kubectl -n {{ .Release.Namespace }} get ingress fastapi-ing -o yaml | less
+   3) Ingress (Traefik)
+     kubectl get ingress
+     kubectl describe ingress <nom ingress>
 
-  4) Accès HTTP(S)
-     http(s)://{{ .Values.exposed_external_url }}/docs
+   4) Accès HTTP(S)
+     http(s)://examlinux.jaffleman.tech/docs
+
+   5) Vérifions à présent le certificat au bout de quelques secondes 
+      kubectl get certificate
 
 Astuce :
   - Logs FastAPI :
