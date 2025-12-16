@@ -9,7 +9,7 @@ metadata:
     {{- include "examkube_chart.labels" . | nindent 4 }}
   annotations:
     # Sélection du resolver ACME configuré dans Traefik (ex.: "le")
-    traefik.ingress.kubernetes.io/router.tls.certresolver: {{ .Values.acme.resolverName | default "le" }}
+    traefik.ingress.kubernetes.io/router.tls.certresolver: "le"
 spec:
   # Classe d’Ingress (remplace l’annotation dépréciée)
   ingressClassName: traefik
