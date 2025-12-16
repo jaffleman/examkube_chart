@@ -8,15 +8,16 @@ metadata:
   labels:
     {{- include "examkube_chart.labels" . | nindent 4 }}
   annotations:
-    kubernetes.io/ingress.class: traefik
-    # Traefik ACME resolver "le" (conforme à ton contexte)
-    traefik.ingress.kubernetes.io/router.tls.certresolver: le
+    # Sélection du resolver ACME configuré dans Traefik (ex.: "le")
+    traefik.ingress.kubernetes.io/router.tls.certresolver: {{ .Values.acme.resolverName | default "le" }}
 spec:
+  # Classe d’Ingress (remplace l’annotation dépréciée)
+  ingressClassName: traefik
   tls:
     - hosts:
-        - {{ $host | lower }}
+        - {{ $host }}
   rules:
-    - host: {{ $host | lower }}
+    - host: {{ $host }}
       http:
         paths:
           - path: /
@@ -24,5 +25,7 @@ spec:
             backend:
               service:
                 name: {{ include "examkube_chart.fullname" . }}-fastapi
+                # Ton app écoute 5000 (d’après tes manifests) ⇒ ne laisse pas "80"
                 port:
-                  number: {{ .Values.service.port | default 80 }}
+                  number: {{ .Values.service.port | default 5000 }}
+
