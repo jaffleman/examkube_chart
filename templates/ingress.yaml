@@ -1,6 +1,6 @@
 
 {{- $domain := required "Values.domain est requis (ex: jaffleman.tech)" .Values.domain -}}
-{{- $host := printf "kube.%s" $domain | lower -}}
+{{- $host := printf "examlinux.%s" $domain | lower -}}
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
