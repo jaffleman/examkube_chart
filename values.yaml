@@ -2,7 +2,6 @@ nameOverride: ""
 fullnameOverride: "examkube"
 
 domain: "jaffleman.tech"
-url: "kube.{{ .Values.domain }}"
 
 namespace:
   create: true

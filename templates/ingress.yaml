@@ -1,27 +1,29 @@
 
+{{- $domain := required "Values.domain est requis (ex: jaffleman.tech)" .Values.domain -}}
+{{- $host := printf "kube.%s" $domain | lower -}}
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: {{ include "examkube_chart.fullname" . }}
+  name: {{ include "examkube.fullname" . }}
   labels:
-    app: ingress
-    {{- include "examkube_chart.labels" . | nindent 4 }}
+    app.kubernetes.io/name: {{ include "examkube.name" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
   annotations:
-    cert-manager.io/cluster-issuer: letsencrypt-prod
+    kubernetes.io/ingress.class: traefik
+    # Traefik ACME resolver "le" (conforme à ton contexte)
+    traefik.ingress.kubernetes.io/router.tls.certresolver: le
 spec:
-  ingressClassName: traefik
   tls:
     - hosts:
-        - {{ .Values.url }}
-      secretName: examkube-tls
+        - {{ $host }}
   rules:
-    - host: {{ .Values.url }}
+    - host: {{ $host }}
       http:
         paths:
           - path: /
             pathType: Prefix
             backend:
               service:
-                name: {{ include "examkube_chart.fullname" . }}-fastapi
+                name: {{ include "examkube.fullname" . }}
                 port:
-                  number: 5000
+                  number: {{ .Values.service.port | default 80 }}
