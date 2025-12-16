@@ -8,9 +8,9 @@ metadata:
   labels:
     {{- include "examkube_chart.labels" . | nindent 4 }}
   annotations:
-    # kubernetes.io/ingress.class: traefik
-    # # Traefik ACME resolver "le" (conforme à ton contexte)
-    # traefik.ingress.kubernetes.io/router.tls.certresolver: le
+    kubernetes.io/ingress.class: traefik
+    # Traefik ACME resolver "le" (conforme à ton contexte)
+    traefik.ingress.kubernetes.io/router.tls.certresolver: le
 spec:
   tls:
     - hosts:
