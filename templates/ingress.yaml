@@ -13,10 +13,10 @@ spec:
   ingressClassName: traefik
   tls:
     - hosts:
-        - kube.jaffleman.tech
+        - {{ .Values.url }}
       secretName: examkube-tls
   rules:
-    - host: kube.jaffleman.tech
+    - host: {{ .Values.url }}
       http:
         paths:
           - path: /
