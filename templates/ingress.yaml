@@ -23,6 +23,6 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: {{ include "examkube_chart.fullname" . }}
+                name: {{ include "examkube_chart.fullname" . }}-fastapi
                 port:
                   number: {{ .Values.service.port | default 80 }}
