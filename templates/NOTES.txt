@@ -16,7 +16,7 @@ Vérifications :
      kubectl describe ingress <nom ingress>
 
    4) Accès HTTP(S)
-     http(s)://examlinux.jaffleman.tech/docs
+     http(s)://examkube.jaffleman.tech/docs
 
    5) Vérifions à présent le certificat au bout de quelques secondes 
       kubectl get certificate

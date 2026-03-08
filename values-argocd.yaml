@@ -1,0 +1,16 @@
+global:
+  domain: argocd.jaffleman.tech
+
+configs:
+  params:
+    server.insecure: true
+
+server:
+  ingress:
+    enabled: true
+    ingressClassName: traefik
+    hosts:
+      - argocd.jaffleman.tech
+    tls: true
+    annotations:
+      cert-manager.io/cluster-issuer: letsencrypt-prod
