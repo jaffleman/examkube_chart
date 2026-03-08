@@ -7,7 +7,7 @@ namespace:
   create: true
 
 replicas:
-  fastapi: 4
+  fastapi: 1
   postgres: 1
 
 images:
